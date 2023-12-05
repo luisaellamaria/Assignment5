@@ -8,18 +8,26 @@ class KVStorage(SyncObj):
 
     @replicated
     def put(self, key, value):
+        # put operation , that sets the value of the key to be the provided value
         print("put key: ", key, " with value: ", value)
-        #TODO: implement the Put operation, that sets the value of the key to be the provided value.
-            
+        self.__data[key] = value
+
     @replicated        
     def append(self, key, value):
+        # append the Append operation, that adds the provided value to the value of the key
         print("append key: ", key, " with value: ", value)
-        #TODO: implement the Append operation, that adds the provided value to the value of the key.
-
+        if key in self.__data:
+            if isinstance(self.__data[key], list):
+                self.__data[key].append(value)
+            else:
+                self.__data[key] = [self.__data[key], value]
+        else:
+            self.__data[key] = [value]
 
     def get(self, key):
+        # get operation, that retrieves the value of the provided key
         print("get key: ", key)
-        #TODO: implement the Get operation, that retrieves the value of the provided key.
+        return self.__data.get(key, None)
 
     def get_dumpfile(self):
         return self.dumpFile

@@ -11,12 +11,14 @@ from kvstorage import KVStorage
 global _g_kvstorage
 
 def is_str(value):
-    return isinstance(value, str)
+    # check if the value is a string and assign it to b
+    b = isinstance(value, str)
+    return b
 
 def is_list_of_string(value):
-    if not isinstance(value, list):
-        return False
-    return all(isinstance(item, str) for item in value)
+    # check if the value is a list and if every item in the list is a string, if both are true assign true to b
+    b = isinstance(value, list) and all(isinstance(item, str) for item in value)
+    return b
 
 
 class KVRequestHandler(BaseHTTPRequestHandler):
