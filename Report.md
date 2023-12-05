@@ -62,9 +62,9 @@ Ans: We got the following replies from the "/admin/status" endpoint of the HTTP 
 - Request 3: http://localhost:8082/admin/status:
 {'version': '0.3.12', 'revision': 'deprecated', 'self': TCPNode('127.0.0.1:6002'), 'state': 0, 'leader': TCPNode('127.0.0.1:6000'), 'has_quorum': True, 'partner_nodes_count': 2, 'partner_node_status_server_127.0.0.1:6001': 2, 'partner_node_status_server_127.0.0.1:6000': 2, 'readonly_nodes_count': 0, 'log_len': 2, 'last_applied': 6, 'commit_idx': 6, 'raft_term': 1, 'next_node_idx_count': 0, 'match_idx_count': 0, 'leader_commit_idx': 6, 'uptime': 636, 'self_code_version': 0, 'enabled_code_version': 0}
 
-From this responses we can read in every response that 'leader': TCPNode('127.0.0.1:6000‘). Therefore server 0 at the port 8080 is our leader.
+- From this responses we can read in every response that 'leader': TCPNode('127.0.0.1:6000‘). Therefore server 0 at the port 8080 is our leader.
 
-Since this is the Raft algorithm it is not possible to have multiple leaders.
+- Since this is the Raft algorithm it is not possible to have multiple leaders.
 
 2. Perform a Put request for the key ``a" on the leader. What is the new status? What changes occurred and why (if any)?
 Ans:
