@@ -169,8 +169,5 @@ If a node that votes two times in a given term, or votes for some node that has 
 
 In order to make the Raft Byzantine fault tolerant, there must be many significant changes to the algorithm.
 
-However, after doing some research, we have an interesting paper which  describes how one could make it fault tolerant: 
+However, after doing some research, we have an interesting paper which  describes how one could make it fault tolerant: https://www.scs.stanford.edu/17au-cs244b/labs/projects/clow_jiang.pdf
 
-https://www.scs.stanford.edu/17au-cs244b/labs/projects/clow_jiang.pdf
-=======
->>>>>>> ac21d393894b572257e2f25c0d7770c38dc81fc2
