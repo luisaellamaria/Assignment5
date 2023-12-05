@@ -63,14 +63,21 @@ Ans: We got the following replies from the "/admin/status" endpoint of the HTTP 
 
 From this responses we can read in every response that 'leader': TCPNode('127.0.0.1:6000‘). Therefore server 0 at the port 8080 is our leader.
 
-Perform an Append request for the key ``a" on the leader. What is the new status? What changes occurred and why (if any)?
-
-Ans: 
-
-Perform a Get request for the key ``a" on the leader. What is the new status? What change (if any) happened and why?
-
+2. Perform a Put request for the key ``a" on the leader. What is the new status? What changes occurred and why (if any)?
 Ans:
+Status: 200
+Changes:
 
+
+4. Perform an Append request for the key ``a" on the leader. What is the new status? What changes occurred and why (if any)?
+Ans:
+Status: 200
+Changes:
+
+5. Perform a Get request for the key ``a" on the leader. What is the new status? What change (if any) happened and why?
+Ans:
+Status: 200
+Changes:
 
 
 # Task 3
