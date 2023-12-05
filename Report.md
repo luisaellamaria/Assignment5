@@ -63,6 +63,8 @@ Ans: We got the following replies from the "/admin/status" endpoint of the HTTP 
 
 From this responses we can read in every response that 'leader': TCPNode('127.0.0.1:6000‘). Therefore server 0 at the port 8080 is our leader.
 
+Since this is the Raft algorithm it is not possible to have multiple leaders.
+
 2. Perform a Put request for the key ``a" on the leader. What is the new status? What changes occurred and why (if any)?
 Ans:
 Status: 200
