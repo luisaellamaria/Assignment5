@@ -23,28 +23,21 @@ Note: we got this information from the link which was provided to us: https://th
 
 
 2. Perform one request on the leader, wait until the leader is committed by all servers. Pause the simulation. Then perform a new request on the leader. Take a screenshot, stop the leader and then resume the simulation. Once, there is a new leader, perform a new request and then resume the previous leader. Once, this new request is committed by all servers, pause the simulation and take a screenshot. Explain what happened?
+
 Ans: 
-In this final screenshot, the logs of the nodes show several committed operations (indicated by the filled circles with a triangle). The fact that each server has the same number of committed entries suggests that the cluster has reached consensus on these entries.
-Based on the series of steps you've provided, here's what happened during the exercise:
-* 		A leader was elected and began to replicate its log entries to the follower nodes.
-* 		A request was sent to the leader, which was then replicated and committed across all nodes. This state was captured in your first screenshot.
-* 		The simulation was paused, and a new request was sent to the leader, after which a screenshot was taken.
-* 		The leader was then stopped, simulating a leader failure, and the simulation was resumed to trigger a new election.
-* 		A new leader was elected, which is evident from the term increment to '2' on all nodes and the replication arrows from S5, which indicate it's the current leader.
-* 		Another request was sent to the new leader, which was replicated and committed across all servers.
-* 		The leader from the previous term was resumed, and at this point, the new request was already committed by all servers. The simulation was paused again, and another screenshot was taken.
-During the process:
-* The term number increased, which means an election occurred and a new term was started.
-* The logs show multiple committed entries, reflecting the operations that were sent to the leader.
-* All servers, including the previously stopped leader, updated their logs to reflect the new committed entries, ensuring consistency across the cluster.
-This exercise demonstrated how the Raft consensus algorithm ensures that a distributed system continues to operate smoothly even in the event of a leader failure. When a new leader takes over, it proposes its new log entries, which are then replicated to the followers. When the old leader rejoins the cluster, it adopts the updated log from the current leader to maintain consistency. This is how the Raft algorithm maintains a consistent state across the cluster, with a new leader stepping in and the old leader syncing up when it rejoins.
+- First of all, we performed a request on the existing leader (S1) and the leader (S1) replicated the entry to the other nodes. The entry was committed once a majority of nodes have written it to their logs, represented by the solid borders around the  first logs (which are for all nodes a 2).  The simulation was then paused and a new request on the same leader (S1) was performed. Then, we paused the simulation and performed a new request on the leader.  Since it was not defined to wait in the instruction we immediately took a screenshot (task1_q2_1.png (also provided in our images folder)). On the screenshot there is one column where all logs are surrounded by solid borders, indicating that replication has been completed and the entries has been committed by all nodes. In the second column only the leader log is surrounded by a solid column and the other logs are surrounded by dotted boarders, indicating that the leader was not committed by the servers yet but if we run the simulation further we will get also those solid boarders like for the first column.
+- Further, we stopped the leader and resumed the simulation. We performed a new request on the new leader and paused the simulation once the request was committed by all servers. The result of this process can be seen in our second screenshot (task1_q2_2.png (also provided in our images folder)).  In the screenshot we can inspect that due to the stop of the first leader (S1) a new leader (S3) was selected in a new term. Since the previous leader (S1) was then resumed, the new leader (S4) was able to be committed by all other nodes (including the previous leader). This commitment can be seen by the solid boarders around all the third logs of all (green) nodes. 
+
+=> The whole process illustrated how the Raft algorithm handles leader failures maintaining integrity and consistency. When a leader fails (is stopped), the remaining nodes can conduct a new leader election.
 
 
 3. Stop the current leader and two other servers. After a few increase in the Raft term, pause the simulation and take a screenshot. Then resume all servers and restart the simulation. After the leader election, pause the simulation and take a screenshot. Explain what happened.
+
 Ans:
+- After we let the two servers running during a few term increments, we observed a behavioural pattern. The terms kept increasing  (as nodes continually attempt to elect a leader) but no new leader can be elected, because in Raft a majority of nodes is required to make decisions.  Hence, the process was kind of stuck, leading to no solid border around any new entries in the logs, indicating no new leader has been elected and no new entries have been committed.  This can be seen in the screenshot (task1_q3_1.png (also provided in our images folder)).   
+- Once al the servers were resumed, they were able to communicate again and hold a new leader election. So, node S5 was chosen as the new leader. The screenshot for this part shows a new term with a leader elected (indicated by the number in a circle on one of the servers)  (task1_q3_2.png (also provided in our images folder)). If a new request was performed on the new leader the entries would be replicated and committed. 
 
-
-
+=> The whole process illustrated the Raft algorithm's requirement for a majority of nodes to be operational to maintain the system's reliability and functionality.
 
 
 # Task 2
