@@ -268,39 +268,129 @@ Changes:
 
 # Task 3
 
-Shut down the server that acts as a leader. Report the status that you get from the servers that remain active after shutting down the leader.
+1. Shut down the server that acts as a leader. Report the status that you get from the servers that remain active after shutting down the leader.
 
 Ans:
 
 Followers after shutting down the leader:
 Follower at 127.0.0.1:6001
-jsonCopy code
-{ "version": "0.3.12", "revision": "deprecated", "self": TCPNode('127.0.0.1:6001'), "state": 2, "leader": TCPNode('127.0.0.1:6001'), "has_quorum": true, "partner_nodes_count": 2, "partner_node_status_server_127.0.0.1:6002": 2, "partner_node_status_server_127.0.0.1:6000": 0, "readonly_nodes_count": 0, "log_len": 3, "last_applied": 5, "commit_idx": 5, "raft_term": 3, "next_node_idx_count": 2, "next_node_idx_server_127.0.0.1:6002": 6, "next_node_idx_server_127.0.0.1:6000": 5, "match_idx_count": 2, "match_idx_server_127.0.0.1:6002": 5, "match_idx_server_127.0.0.1:6000": 0, "leader_commit_idx": 5, "uptime": 1258, "self_code_version": 0, "enabled_code_version": 0 }
+{
+  "version": "0.3.12",
+  "revision": "deprecated",
+  "self": TCPNode('127.0.0.1:6001'),
+  "state": 0,
+  "leader": TCPNode('127.0.0.1:6000'),
+  "has_quorum": true,
+  "partner_nodes_count": 2,
+  "partner_node_status_server_127.0.0.1:6002": 2,
+  "partner_node_status_server_127.0.0.1:6000": 2,
+  "readonly_nodes_count": 0,
+  "log_len": 4,
+  "last_applied": 4,
+  "commit_idx": 4,
+  "raft_term": 1,
+  "next_node_idx_count": 0,
+  "match_idx_count": 0,
+  "leader_commit_idx": 4,
+  "uptime": 247,
+  "self_code_version": 0,
+  "enabled_code_version": 0
+}
 
 Follower at 127.0.0.1:6002
-jsonCopy code
-{ "version": "0.3.12", "revision": "deprecated", "self": TCPNode('127.0.0.1:6002'), "state": 0, "leader": TCPNode('127.0.0.1:6001'), "has_quorum": true, "partner_nodes_count": 2, "partner_node_status_server_127.0.0.1:6001": 2, "partner_node_status_server_127.0.0.1:6000": 0, "readonly_nodes_count": 0, "log_len": 2, "last_applied": 5, "commit_idx": 5, "raft_term": 3, "next_node_idx_count": 0, "match_idx_count": 0, "leader_commit_idx": 5, "uptime": 1494, "self_code_version": 0, "enabled_code_version": 0 }
+{
+  "version": "0.3.12",
+  "revision": "deprecated",
+  "self": TCPNode('127.0.0.1:6001'),
+  "state": 2,
+  "leader": TCPNode('127.0.0.1:6001'),
+  "has_quorum": true,
+  "partner_nodes_count": 2,
+  "partner_node_status_server_127.0.0.1:6002": 2,
+  "partner_node_status_server_127.0.0.1:6000": 0,
+  "readonly_nodes_count": 0,
+  "log_len": 5,
+  "last_applied": 5,
+  "commit_idx": 5,
+  "raft_term": 3,
+  "next_node_idx_count": 2,
+  "next_node_idx_server_127.0.0.1:6002": 6,
+  "next_node_idx_server_127.0.0.1:6000": 5,
+  "match_idx_count": 2,
+  "match_idx_server_127.0.0.1:6002": 5,
+  "match_idx_server_127.0.0.1:6000": 0,
+  "leader_commit_idx": 5,
+  "uptime": 288,
+  "self_code_version": 0,
+  "enabled_code_version": 0
+}
+ 
 
 - The first follower (127.0.0.1:6001) has assumed the leader role (state: 2) and sees itself as the leader. So, a new leader election has taken place. The second follower (127.0.0.1:6002) remains a follower (state: 0) and recognizes the first follower as the new leader.
 
 
- Perform a Put request for the key "a". Then, restart the server from the previous point, and indicate the new status for the three servers. Indicate the result of a Get request for the key ``a" to the previous leader.
+2. Perform a Put request for the key "a". Then, restart the server from the previous point, and indicate the new status for the three servers. Indicate the result of a Get request for the key ``a" to the previous leader.
+
+Ans:
+State before the PUT request and restart:
+Server 6001 (Leader):
+- State: Leader (state = 2)
+- Log Length: 2
+- Last Applied: 5
+- Commit Index: 5
+- Partner Node Status: Server 6002 (state = 2), Server 6000 (state = 0)
+
+Server 6002 (Follower):
+- State: Follower (state = 0)
+- Log Length: 2
+- Last Applied: 5
+- Commit Index: 5
+
+Server 6000 (Follower, but with outdated state):
+- State: Follower (state = 0)
+- Log Length: 2
+- Last Applied: 5
+- Commit Index: 5
+
+State after the PUT request and the restart:
+Server 6000:
+- State: Follower (state = 0)
+- Log Length: 3 (indicating it has received a new log entry)
+- Last Applied: 6
+- Commit Index: 6
+
+Server 6001 (Still the Leader):
+- State: Leader (state = 2)
+- Log Length: 3
+- Last Applied: 6
+- Commit Index: 6
+  
+Server 6002 (Follower):
+- State: Follower (state = 0)
+- Log Length: 3
+- Last Applied: 6
+- Commit Index: 6
+
+The PUT request was made to the leader and then replicated to the followers. Server 6000, after being restarted, caught up with the latest changes. It updated its log length, last applied, and commit index to reflect the new state of the log. All servers now have a log length of 3, indicating that they are all up-to-date with the latest log entry.
+
+If now a GET request  for the key “a” to the previous leader (Server 6001) would be performed, it should return the value that was set in the most recent PUT request. This is because the leader ahs the most up-to-date state of the log, and the PUR request was successfully replicated to the other servers. 
+
+
+3. Has the Put request been replicated? Indicate which steps lead to a new election and which ones do not. Justify your answer using the statuses returned by the servers.
+
+Ans: Yes, the PUT request was successfully replicated. There are no steps in this scenario that lead to a new election. The leader (Server 6001) remains the same throughout the process. Usally : when the old leader dies. Steps that Do Not Lead to a New Election: The PUT request and the server restart do not lead to a new election. The system maintains its leader and replicates the new log entry without triggering a leadership change.
+
+
+
+4. Shut down two servers, including the leader --- starting with the server that is not the leader. Report the status of the remaining server  and explain what happened.
 
 Ans:
 
-Has the Put request been replicated? Indicate which steps lead to a new election and which ones do not. Justify your answer using the statuses returned by the servers.
+5. Can you perform Get, Put, or Append requests in this system state? Justify your answer.
 
 Ans:
 
-Shut down two servers, including the leader --- starting with the server that is not the leader. Report the status of the remaining servers and explain what happened.
-
-Ans:
-
-Can you perform Get, Put, or Append requests in this system state? Justify your answer.
-
-Ans:
-
-Restart the servers and note down the new status. Describe what happened.
+6. Restart the servers and note down the new status. Describe what happened.
 
 Ans:
 
