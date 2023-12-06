@@ -57,23 +57,213 @@ Ans: We got the following replies from the "/admin/status" endpoint of the HTTP 
 
 - From this responses we can read in every response that 'leader': TCPNode('127.0.0.1:6000‘). Therefore server 0 at the port 8080 is our leader.
 
-- Since this is the Raft algorithm it is not possible to have multiple leaders.
+- Since this is the Raft algorithm it is not possible to have multiple leaders. In a well functioning system, Raft is designed to ensure that there is only one leader in any given term, a period during which a leader is elected and remains in charge unless it fails or becomes disconnected.
 
 2. Perform a Put request for the key ``a" on the leader. What is the new status? What changes occurred and why (if any)?
 Ans:
+System state before PUT request:
+{
+  "version": "0.3.12",
+  "revision": "deprecated",
+  "self": TCPNode('127.0.0.1:6000'),
+  "state": 2,
+  "leader": TCPNode('127.0.0.1:6000'),
+  "has_quorum": true,
+  "partner_nodes_count": 2,
+  "partner_node_status_server_127.0.0.1:6001": 2,
+  "partner_node_status_server_127.0.0.1:6002": 2,
+  "readonly_nodes_count": 0,
+  "log_len": 2,
+  "last_applied": 2,
+  "commit_idx": 2,
+  "raft_term": 1,
+  "next_node_idx_count": 2,
+  "next_node_idx_server_127.0.0.1:6001": 3,
+  "next_node_idx_server_127.0.0.1:6002": 3,
+  "match_idx_count": 2,
+  "match_idx_server_127.0.0.1:6001": 2,
+  "match_idx_server_127.0.0.1:6002": 2,
+  "leader_commit_idx": 2,
+  "uptime": 92,
+  "self_code_version": 0,
+  "enabled_code_version": 0
+}
+
+
+System state after PUT request:
+{
+  "version": "0.3.12",
+  "revision": "deprecated",
+  "self": TCPNode('127.0.0.1:6000'),
+  "state": 2,
+  "leader": TCPNode('127.0.0.1:6000'),
+  "has_quorum": true,
+  "partner_nodes_count": 2,
+  "partner_node_status_server_127.0.0.1:6001": 2,
+  "partner_node_status_server_127.0.0.1:6002": 2,
+  "readonly_nodes_count": 0,
+  "log_len": 3,
+  "last_applied": 3,
+  "commit_idx": 3,
+  "raft_term": 1,
+  "next_node_idx_count": 2,
+  "next_node_idx_server_127.0.0.1:6001": 4,
+  "next_node_idx_server_127.0.0.1:6002": 4,
+  "match_idx_count": 2,
+  "match_idx_server_127.0.0.1:6001": 3,
+  "match_idx_server_127.0.0.1:6002": 3,
+  "leader_commit_idx": 3,
+  "uptime": 123,
+  "self_code_version": 0,
+  "enabled_code_version": 0
+}
+
 Status: 200
-Changes:
+
+Changes: 
+- Firstly, we noticed a change in the log length. Before it was 2 and after it was 3. We assumed that this change indicates to the new entry added due to the PUT request.
+- Secondly, we noticed a change in the last applied value also from 2 to 3. This indicates that a new log entry has been applied to the state machine.
+- Then we also noticed a change in the commit index also from 2 to 3. The commit index has advanced, confirming the new log entry is committed.
+- Further, we noticed a change in the next node index before it was for 6001 and 6002 3 and after it was 4. We assumed that the leaders next index for each follower has increased, indicating new log entry sent to followers.
+- There is also a change in the match_idx_server which was 2 for 6001 and 6002 before and after it was 3. This shows that followers have replicated the new log entry, updating their match index.
+- Also the leader commit index changed from 2 to 3, indicating that the leader has advanced its commit index post successful replication.
+- Lastly, the uptime changed from 92 seconds to 123 second, which is due to the time which passed.
+
+All the other parameters remained unchanged, as expected for static or less frequently changing system aspects.
 
 
 4. Perform an Append request for the key ``a" on the leader. What is the new status? What changes occurred and why (if any)?
 Ans:
-Status: 200
-Changes:
+System state before APPEND request:
+ {
+  "version": "0.3.12",
+  "revision": "deprecated",
+  "self": TCPNode('127.0.0.1:6000'),
+  "state": 2,
+  "leader": TCPNode('127.0.0.1:6000'),
+  "has_quorum": true,
+  "partner_nodes_count": 2,
+  "partner_node_status_server_127.0.0.1:6001": 2,
+  "partner_node_status_server_127.0.0.1:6002": 2,
+  "readonly_nodes_count": 0,
+  "log_len": 3,
+  "last_applied": 3,
+  "commit_idx": 3,
+  "raft_term": 1,
+  "next_node_idx_count": 2,
+  "next_node_idx_server_127.0.0.1:6001": 4,
+  "next_node_idx_server_127.0.0.1:6002": 4,
+  "match_idx_count": 2,
+  "match_idx_server_127.0.0.1:6001": 3,
+  "match_idx_server_127.0.0.1:6002": 3,
+  "leader_commit_idx": 3,
+  "uptime": 123,
+  "self_code_version": 0,
+  "enabled_code_version": 0
+}
 
-5. Perform a Get request for the key ``a" on the leader. What is the new status? What change (if any) happened and why?
-Ans:
+System state after APPEND request:
+{
+  "version": "0.3.12",
+  "revision": "deprecated",
+  "self": TCPNode('127.0.0.1:6000'),
+  "state": 2,
+  "leader": TCPNode('127.0.0.1:6000'),
+  "has_quorum": true,
+  "partner_nodes_count": 2,
+  "partner_node_status_server_127.0.0.1:6001": 2,
+  "partner_node_status_server_127.0.0.1:6002": 2,
+  "readonly_nodes_count": 0,
+  "log_len": 3,
+  "last_applied": 4,
+  "commit_idx": 4,
+  "raft_term": 1,
+  "next_node_idx_count": 2,
+  "next_node_idx_server_127.0.0.1:6001": 5,
+  "next_node_idx_server_127.0.0.1:6002": 5,
+  "match_idx_count": 2,
+  "match_idx_server_127.0.0.1:6001": 4,
+  "match_idx_server_127.0.0.1:6002": 4,
+  "leader_commit_idx": 4,
+  "uptime": 716,
+  "self_code_version": 0,
+  "enabled_code_version": 0
+}
+
 Status: 200
+
 Changes:
+- Firstly, the last_applied value changed from 3 to 4, which indicates that the commit index has increased, meaning a new log entry is now considered committed.
+- Then, the next_node_idx for both servers changed from 4 to 5, indication that the leader's next index for each follower has increased, likely indicating that it has sent another new log entry to the followers.
+- Then, the match_idx for both servers changed, indication that the followers have replicated an additional new log entry, hence their match index has been updated.
+- Further, the leader_commit_idx changed from 3 to 4, indicating that the leader has advanced its commit index, confirming successful replication of the new log entry.
+- And then also the uptime increased for obvious reasons.
+
+All other parameters remained unchanged.
+
+6. Perform a Get request for the key ``a" on the leader. What is the new status? What change (if any) happened and why?
+Ans:
+System State before GET request:
+{
+  "version": "0.3.12",
+  "revision": "deprecated",
+  "self": TCPNode('127.0.0.1:6000'),
+  "state": 2,
+  "leader": TCPNode('127.0.0.1:6000'),
+  "has_quorum": true,
+  "partner_nodes_count": 2,
+  "partner_node_status_server_127.0.0.1:6001": 2,
+  "partner_node_status_server_127.0.0.1:6002": 2,
+  "readonly_nodes_count": 0,
+  "log_len": 4,
+  "last_applied": 4,
+  "commit_idx": 4,
+  "raft_term": 1,
+  "next_node_idx_count": 2,
+  "next_node_idx_server_127.0.0.1:6001": 5,
+  "next_node_idx_server_127.0.0.1:6002": 5,
+  "match_idx_count": 2,
+  "match_idx_server_127.0.0.1:6001": 4,
+  "match_idx_server_127.0.0.1:6002": 4,
+  "leader_commit_idx": 4,
+  "uptime": 12,
+  "self_code_version": 0,
+  "enabled_code_version": 0
+}
+
+System State after GET request:
+
+{
+  "version": "0.3.12",
+  "revision": "deprecated",
+  "self": TCPNode('127.0.0.1:6000'),
+  "state": 2,
+  "leader": TCPNode('127.0.0.1:6000'),
+  "has_quorum": true,
+  "partner_nodes_count": 2,
+  "partner_node_status_server_127.0.0.1:6001": 2,
+  "partner_node_status_server_127.0.0.1:6002": 2,
+  "readonly_nodes_count": 0,
+  "log_len": 4,
+  "last_applied": 4,
+  "commit_idx": 4,
+  "raft_term": 1,
+  "next_node_idx_count": 2,
+  "next_node_idx_server_127.0.0.1:6001": 5,
+  "next_node_idx_server_127.0.0.1:6002": 5,
+  "match_idx_count": 2,
+  "match_idx_server_127.0.0.1:6001": 4,
+  "match_idx_server_127.0.0.1:6002": 4,
+  "leader_commit_idx": 4,
+  "uptime": 30,
+  "self_code_version": 0,
+  "enabled_code_version": 0
+}
+
+Status: 200
+
+Changes:
+- The only change is that the up-time increased for obvious reasons. Everything else remains unchanged which is due to the nature of a GET request is a read operation and typically does not alter the parameters.
 
 
 # Task 3
@@ -81,6 +271,18 @@ Changes:
 Shut down the server that acts as a leader. Report the status that you get from the servers that remain active after shutting down the leader.
 
 Ans:
+
+Followers after shutting down the leader:
+Follower at 127.0.0.1:6001
+jsonCopy code
+{ "version": "0.3.12", "revision": "deprecated", "self": TCPNode('127.0.0.1:6001'), "state": 2, "leader": TCPNode('127.0.0.1:6001'), "has_quorum": true, "partner_nodes_count": 2, "partner_node_status_server_127.0.0.1:6002": 2, "partner_node_status_server_127.0.0.1:6000": 0, "readonly_nodes_count": 0, "log_len": 3, "last_applied": 5, "commit_idx": 5, "raft_term": 3, "next_node_idx_count": 2, "next_node_idx_server_127.0.0.1:6002": 6, "next_node_idx_server_127.0.0.1:6000": 5, "match_idx_count": 2, "match_idx_server_127.0.0.1:6002": 5, "match_idx_server_127.0.0.1:6000": 0, "leader_commit_idx": 5, "uptime": 1258, "self_code_version": 0, "enabled_code_version": 0 }
+
+Follower at 127.0.0.1:6002
+jsonCopy code
+{ "version": "0.3.12", "revision": "deprecated", "self": TCPNode('127.0.0.1:6002'), "state": 0, "leader": TCPNode('127.0.0.1:6001'), "has_quorum": true, "partner_nodes_count": 2, "partner_node_status_server_127.0.0.1:6001": 2, "partner_node_status_server_127.0.0.1:6000": 0, "readonly_nodes_count": 0, "log_len": 2, "last_applied": 5, "commit_idx": 5, "raft_term": 3, "next_node_idx_count": 0, "match_idx_count": 0, "leader_commit_idx": 5, "uptime": 1494, "self_code_version": 0, "enabled_code_version": 0 }
+
+- The first follower (127.0.0.1:6001) has assumed the leader role (state: 2) and sees itself as the leader. So, a new leader election has taken place. The second follower (127.0.0.1:6002) remains a follower (state: 0) and recognizes the first follower as the new leader.
+
 
  Perform a Put request for the key "a". Then, restart the server from the previous point, and indicate the new status for the three servers. Indicate the result of a Get request for the key ``a" to the previous leader.
 
