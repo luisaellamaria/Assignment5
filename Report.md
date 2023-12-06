@@ -109,61 +109,24 @@ Ans:
 
 1. What is a consensus algorithm? What are they used for in the context of replicated state machines? 
 
-Ans: 
+Ans: A consensus algorithm is a process used to achieve agreement on a single data value among distributed processes or systems. Consunsus Algorithms have been designed to coordinate the system's processes to agree on data value and how that will be used in the system. It ensures that network activities are done in a secure and reliable manner which establishes trust among peers in the network. A replicated state machine is a deterministic state machine where multiple machines have the same state and run the same. 
 
-What is a consensus algorithm: 
+"What are they used for in the context of replicated state machines?" - They are important in distributed systems to ensure that each node maintains an identical copy of a particular state. 
+They are important to coordinate updates. When changes to the state are required (like a new transaction in a distributed ledger), all nodes must agree on the order and content of these changes. A consensus algorithm ensures that all nodes agree on the sequence of actions that modify the state. Consensus algorithns are also important to handle failures. In distributed systems, nodes can fail, become unresponsive, or even act maliciously. Consensus algorithms are designed to handle these issues by ensuring that the overall system continues to operate correctly and agree on the state, even if some nodes are not functioning properly.
 
-A consensus algorithm is a process used to achieve agreement on a single data value among distributed processes or systems. Consunsus Algorithms have been designed to coordinate the system's processes to agree on data value and how that will be used in the system. 
-It ensures that network activities are done in a secure and reliable manner which establishes trust among peers in the network.
-
-A replicated state machine is a deterministic state machine where multiple machines have the same state and run the same. 
-
- What are they used for in the context of replicated state machines? 
-
-They are important in distributed systems to ensure that each node maintains an identical copy of a particular state. 
-
-It is important to coordinate updates: 
-
-When changes to the state are required (like a new transaction in a distributed ledger), all nodes must agree on the order and content of these changes. A consensus algorithm ensures that all nodes agree on the sequence of actions that modify the state. 
-
-Handling failures: 
-
-In distributed systems, nodes can fail, become unresponsive, or even act maliciously. Consensus algorithms are designed to handle these issues by ensuring that the overall system continues to operate correctly and agree on the state, even if some nodes are not functioning properly.
+Note: most of the information about consensus algorithms we got from here: https://www.techtarget.com/whatis/definition/consensus-algorithm#:~:text=A%20consensus%20algorithm%20is%20a,among%20distributed%20processes%20or%20systems.
 
 
 2. What are the main features of the Raft algorithm? How does Raft enable fault tolerance?
 
-Ans: 
+Ans: Raft uses a well-defined leader election process. When the current leader fails or becomes unreachable, a new leader is elected, ensuring continuous coordination among nodes. The leader is responsible for log replication. All changes to the state are first made on the leader's log, then replicated to the follower nodes, ensuring consistency across the cluster. Raft ensures that if any node has applied a particular log entry to its state machine, then other nodes won't apply a different command for the same log index. This guarantees consistency across the system. Raft forces the logs of the followers to match those of the leader. If a follower's log diverges, the leader overwrites it with its own data, ensuring all nodes maintain identical logs. Before a leader can consider a log entry as committed, it must first store entries from previous leaders. This ensures data consistency across leader changes.
 
-Raft uses a well-defined leader election process. When the current leader fails or becomes unreachable, a new leader is elected, ensuring continuous coordination among nodes.
-
-
-The leader is responsible for log replication. All changes to the state are first made on the leader's log, then replicated to the follower nodes, ensuring consistency across the cluster.
-
-Raft ensures that if any node has applied a particular log entry to its state machine, then other nodes won't apply a different command for the same log index. This guarantees consistency across the system.
-
-Raft forces the logs of the followers to match those of the leader. If a follower's log diverges, the leader overwrites it with its own data, ensuring all nodes maintain identical logs.
-
-Before a leader can consider a log entry as committed, it must first store entries from previous leaders. This ensures data consistency across leader changes.
-
-
+Note: we learned about Raft from the lecture slides (week 9)
 
 3. What are Byzantine failures? Can Raft handle them?
 
-Ans: 
-<<<<<<< HEAD
+Ans: Byzantine failures, named after the Byzantine Generals' Problem, represent one of the most challenging class of failures in distributed systems. They describe a situation where components of a system fail in arbitrary or unpredictable and malicious ways, which can include disinformation, sending conflicting information to different parts of the system, or working to actively undermine the system's operation. This is different from standard failures where a component simply stops working or responds with an error.
 
-What are Byzantine failures?
-
-Byzantine failures, named after the Byzantine Generals' Problem, represent one of the most challenging class of failures in distributed systems. They describe a situation where components of a system fail in arbitrary or unpredictable and malicious ways, which can include disinformation, sending conflicting information to different parts of the system, or working to actively undermine the system's operation. This is different from standard failures where a component simply stops working or responds with an error.
-
-Can Raft handle them?
-
-No, Raft's initial description is not byzantine fault-tolerant.
-
-If a node that votes two times in a given term, or votes for some node that has an information which is not updated and that node becomes leader. Such behaviour could cause inconsistencies in the log or could lead to two nodes that both believe themselves to be leaders.
-
-In order to make the Raft Byzantine fault tolerant, there must be many significant changes to the algorithm.
-
-However, after doing some research, we have an interesting paper which  describes how one could make it fault tolerant: https://www.scs.stanford.edu/17au-cs244b/labs/projects/clow_jiang.pdf
+"Can Raft handle them?" - No, Raft's initial description is not byzantine fault-tolerant. If a node that votes two times in a given term, or votes for some node that has an information which is not updated and that node becomes leader. Such behaviour could cause inconsistencies in the log or could lead to two nodes that both believe themselves to be leaders. In order to make the Raft Byzantine fault tolerant, there must be many significant changes to the algorithm.
+However, after doing some research, we have an interesting paper which describes how one could make it fault tolerant: https://www.scs.stanford.edu/17au-cs244b/labs/projects/clow_jiang.pdf
 
