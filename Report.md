@@ -390,9 +390,99 @@ Ans:
 
 Ans:
 
+This action would typically lead to a re-election process in a distributed consensus algorithm like Raft, but with only one remaining server, no leader can be elected, and the system cannot reach a consensus.
+
+After shutting down two servers, including the leader, the remaining server will be unable to elect a new leader because it's alone in the network (lacks quorum). 
+
+In this state, the system is in a leaderless state and lacks quorum, so it cannot safely perform operations that require consensus, like Put or Append. These operations need a leader to coordinate the consensus process. 
+
+When we try out the get request, we do not receive the desired update according to the put / append operation. 
+Therefore, we can perform a get but the get is not successful as it does not contain the expected information 
+
+ 
+
 6. Restart the servers and note down the new status. Describe what happened.
 
 Ans:
+Here, I have the two status from te remaining node, one with o partner nodes, one after restarting partner nodes servers ( set up from beginning ) 
+
+Before: 
+{
+  "version": "0.3.12",
+  "revision": "deprecated",
+  "self": "TCPNode('127.0.0.1:6002')",
+  "state": 2,
+  "leader": "TCPNode('127.0.0.1:6002')",
+  "has_quorum": false,
+  "partner_nodes_count": 2,
+  "partner_node_status": {
+    "server_127.0.0.1:6001": 0,
+    "server_127.0.0.1:6000": 0
+  },
+  "readonly_nodes_count": 0,
+  "log_len": 4,
+  "last_applied": 4,
+  "commit_idx": 4,
+  "raft_term": 4,
+  "next_node_idx_count": 2,
+  "next_node_idx": {
+    "server_127.0.0.1:6001": 5,
+    "server_127.0.0.1:6000": 5
+  },
+  "match_idx_count": 2,
+  "match_idx": {
+    "server_127.0.0.1:6001": 4,
+    "server_127.0.0.1:6000": 4
+  },
+  "leader_commit_idx": 4,
+  "uptime": 108,
+  "code_version": {
+    "self": 0,
+    "enabled": 0
+  }
+}
+
+
+After: 
+
+{
+  "version": "0.3.12",
+  "revision": "deprecated",
+  "self": "TCPNode('127.0.0.1:6002')",
+  "state": 2,
+  "leader": "TCPNode('127.0.0.1:6002')",
+  "has_quorum": true,
+  "partner_nodes_count": 2,
+  "partner_node_status": {
+    "server_127.0.0.1:6001": 2,
+    "server_127.0.0.1:6000": 2
+  },
+  "readonly_nodes_count": 0,
+  "log_len": 5,
+  "last_applied": 5,
+  "commit_idx": 5,
+  "raft_term": 5,
+  "next_node_idx_count": 2,
+  "next_node_idx": {
+    "server_127.0.0.1:6001": 6,
+    "server_127.0.0.1:6000": 6
+  },
+  "match_idx_count": 2,
+  "match_idx": {
+    "server_127.0.0.1:6001": 5,
+    "server_127.0.0.1:6000": 5
+  },
+  "leader_commit_idx": 5,
+  "uptime": 147,
+  "code_version": {
+    "self": 0,
+    "enabled": 0
+  }
+}
+
+What we can notice: 
+
+Initially, when one node is alone, theere is no  quorum and no partner nodes anymore. (partner_node_status_server values are 0). After restarting the other two servers, we can notice how the node that waws remainng aloe before has become a functioning leader with the restarted servers as partner nodes. The cluster achieved a quorum and the partner nodes are operational (partner_node_status_server values are 2).
 
 
 
